@@ -3,8 +3,12 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+// clang-format off
+#include <exception> // Missing include inside asio
+#include <asio.hpp>
+// clang-format on
 
-#include <modbus/client.hpp>
+import modbus;
 
 void on_io_error(std::error_code const& error) {
   std::cout << "Read error: " << error.message() << "\n";

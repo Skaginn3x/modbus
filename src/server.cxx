@@ -1,21 +1,20 @@
-#pragma once
-
+module;
 #include <array>
 #include <expected>
 #include <iostream>
 #include <ranges>
 #include <string>
 
-#include <asio/as_tuple.hpp>
+// clang-format off
+#include <asio.hpp>
+// clang-format on
 #include <asio/experimental/awaitable_operators.hpp>
-
-#include <modbus/error.hpp>
-#include <modbus/functions.hpp>
-#include <modbus/impl/deserialize.hpp>
-#include <modbus/impl/serialize.hpp>
-#include <modbus/request.hpp>
-#include <modbus/response.hpp>
-#include <modbus/tcp.hpp>
+export module modbus:server;
+import :tcp;
+import :error;
+import :packet;
+import :deserialize;
+import :function;
 
 namespace modbus {
 
@@ -143,7 +142,7 @@ auto handle_connection(tcp::socket client, auto&& handler) -> awaitable<void> {
   co_await wait_a_minute.async_wait(asio::use_awaitable);
 }
 
-template <typename server_handler_t>
+export template <typename server_handler_t>
 struct server {
   explicit server(asio::io_context& io_context, std::shared_ptr<server_handler_t>& handler, int port)
       : acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), handler_(handler) {}

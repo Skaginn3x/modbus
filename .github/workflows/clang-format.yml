@@ -19,7 +19,7 @@ jobs:
         with:
           source: '.'
           exclude: ''
-          extensions: 'h,hpp,cpp'
+          extensions: 'h,hpp,cpp,cxx'
           clangFormatVersion: 16
           style: file
           inplace: True

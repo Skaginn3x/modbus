@@ -5,6 +5,7 @@
       "name": "conf-base",
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja",
       "cacheVariables": {
         "VCPKG_INSTALLED_DIR": "${fileDir}/vcpkg-sysroot",
         "VCPKG_OVERLAY_TRIPLETS": "${fileDir}/vcpkg-overlays/triplets",
@@ -14,7 +15,8 @@
     {
       "name": "conf-gcc",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc"
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${fileDir}/cmake/toolchains/x64-linux-gcc.cmake"
       },
       "inherits": [
         "conf-base"
@@ -23,7 +25,8 @@
     {
       "name": "conf-clang",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-linux-clang"
+        "VCPKG_TARGET_TRIPLET": "x64-linux-clang",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${fileDir}/cmake/toolchains/x64-linux-clang.cmake"
       },
       "inherits": [
         "conf-base"

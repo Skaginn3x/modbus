@@ -1,9 +1,10 @@
+// clang-format off
+#include <asio.hpp>
 #include <array>
-#include <modbus/client.hpp>
-#include <modbus/default_handler.hpp>
-#include <modbus/server.hpp>
-
 #include <boost/ut.hpp>
+// clang-format on
+
+import modbus;
 
 int main() {
   using boost::ut::operator""_test;

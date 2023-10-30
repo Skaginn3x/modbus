@@ -1,9 +1,12 @@
 // Copyright (c) 2023, Skaginn3x (https://skaginn3x.com)
 
+// clang-format off
+#include <exception>
+#include <asio.hpp>
 #include <iostream>
+// clang-format on
 
-#include <modbus/default_handler.hpp>
-#include <modbus/server.hpp>
+import modbus;
 
 int main(int argc, char* argv[]) {
   uint16_t port = 1502;

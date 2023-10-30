@@ -1,14 +1,18 @@
-#pragma once
+module;
+// clang-format off
 #include <asio.hpp>
 #include <cstdint>
 #include <span>
 #include <utility>
+// clang-format on
+
+export module modbus:tcp;
 
 namespace modbus {
 
 /// Modbus/TCP application protocol (MBAP) header.
 #pragma pack(push, 1)
-struct tcp_mbap {
+export struct tcp_mbap {
   std::uint16_t transaction;
   std::uint16_t protocol = 0;  // 0 for modbus.
   std::uint16_t length;

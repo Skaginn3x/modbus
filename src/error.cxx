@@ -1,4 +1,5 @@
 // Copyright (c) 2017, Fizyr (https://fizyr.com)
+// Copyright (c) 2023, Skaginn3x (https://skaginn3x.com)
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -22,14 +23,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+module;
+#include <string>
 #include <system_error>
+export module modbus:error;
 
 namespace modbus {
-
 /// Modbus error code constants.
 namespace errc {
-enum errc_t {
+export enum errc_t {
   no_error = 0x0,
   illegal_function = 0x01,
   illegal_data_address = 0x02,
@@ -50,8 +52,54 @@ enum errc_t {
 /// Enum type for Modbus error codes.
 using errc_t = errc::errc_t;
 
-/// The error category for Modbus errors.
-std::error_category const& modbus_category();
+namespace {
+/// Error category for modbus errors.
+class modbus_category_t : public std::error_category {
+  /// Get the name of the error category
+  [[nodiscard]] auto name() const noexcept -> char const* override { return "modbus"; }
+
+  /// Get a descriptive error message for an error code.
+  [[nodiscard]] auto message(int error) const noexcept -> std::string override {
+    switch (static_cast<errc::errc_t>(error)) {
+      case errc::no_error:
+        return "error 00: No error - internal";
+      case errc::illegal_function:
+        return "error 01: Illegal function";
+      case errc::illegal_data_address:
+        return "error 02: Illegal data address";
+      case errc::illegal_data_value:
+        return "error 03: Illegal data value";
+      case errc::server_device_failure:
+        return "error 04: Server device failure";
+      case errc::acknowledge:
+        return "error 05: Acknowledge";
+      case errc::server_device_busy:
+        return "error 06: Server device busy";
+      case errc::memory_parity_error:
+        return "error 08: Memory parity error";
+      case errc::gateway_path_unavailable:
+        return "error 10: Gateway path unavailable";
+      case errc::gateway_target_device_failed_to_respond:
+        return "error 11: Gateway target device failed to respond";
+      case errc::message_size_mismatch:
+        return "peer error: message size mismatch";
+      case errc::message_too_large:
+        return "peer error: message size limit exceeded";
+      case errc::unexpected_function_code:
+        return "peer error: unexpected function code";
+      case errc::invalid_value:
+        return "peer error: invalid value received";
+    }
+
+    return "unknown error: " + std::to_string(error);
+  }
+} modbus_category_instance;
+}  // namespace
+
+/// The error category for modbus errors.
+auto modbus_category() -> std::error_category const& {
+  return modbus_category_instance;
+}
 
 /// Get an error code for a Modbus error,
 inline std::error_code modbus_error(modbus::errc_t error_code) {
