@@ -3,8 +3,11 @@
 // Used to generate test data from known working modbus clients
 // fe mbpoll
 
+// clang-format off
+#include <exception>
 #include <asio.hpp>
 #include <iostream>
+// clang-format on
 
 namespace ip = asio::ip;
 using tcp = ip::tcp;

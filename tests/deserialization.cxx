@@ -1,11 +1,13 @@
+// clang-format off
+#include <exception>
 #include <array>
 #include <iostream>
-
+#include <span>
 #include <boost/ut.hpp>
-#include <modbus/impl/deserialize_base.hpp>
-#include <modbus/impl/deserialize_request.hpp>
-#include <modbus/impl/deserialize_response.hpp>
-#include <modbus/tcp.hpp>
+#include <expected>
+// clang-format on
+
+import modbus;
 
 void print_bytes(std::span<uint8_t> data) {
   for (auto& k : data) {
