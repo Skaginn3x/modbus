@@ -43,6 +43,7 @@ struct write_single_register;
 struct write_multiple_coils;
 struct write_multiple_registers;
 struct mask_write_register;
+struct read_write_multiple_registers;
 }  // namespace request
 
 namespace response {
@@ -356,6 +357,38 @@ struct mask_write_register {
   }
 };
 
+/// Message representing a read_write_multiple_registers response.
+struct read_write_multiple_registers {
+  /// Request type.
+  using request = request::read_write_multiple_registers;
+
+  /// The function code.
+  static constexpr function_e function = function_e::read_write_multiple_registers;
+
+  /// The read values.
+  std::vector<std::uint16_t> values;
+
+  /// The length of the serialized ADU in bytes.
+  [[nodiscard]] auto length() const -> std::size_t { return 2 + values.size() * 2; }
+
+  [[nodiscard]] auto deserialize(std::ranges::range auto data) -> std::error_code {
+    auto ex_values = impl::deserialize_words_response(std::span(data).subspan(1));
+    if (!ex_values) {
+      return ex_values.error();
+    }
+    values = ex_values.value();
+    return {};
+  }
+
+  [[nodiscard]] auto serialize() const -> std::vector<uint8_t> {
+    std::vector<uint8_t> ret_value;
+    ret_value.emplace_back(impl::serialize_function(function));
+    auto word_response = impl::serialize_words_response(values);
+    ret_value.insert(ret_value.end(), word_response.begin(), word_response.end());
+    return ret_value;
+  }
+};
+
 using responses = std::variant<mask_write_register,
                                read_holding_registers,
                                read_coils,
@@ -364,6 +397,7 @@ using responses = std::variant<mask_write_register,
                                write_multiple_coils,
                                write_multiple_registers,
                                write_single_coil,
-                               write_single_register>;
+                               write_single_register,
+                               read_write_multiple_registers>;
 }  // namespace response
 }  // namespace modbus

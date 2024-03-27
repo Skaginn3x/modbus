@@ -22,6 +22,17 @@
       ]
     },
     {
+      "name": "conf-gcc-debug",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc",
+        "CMAKE_INSTALL_PREFIX": "${fileDir}/install/${presetName}",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "inherits": [
+        "conf-base"
+      ]
+    },
+    {
       "name": "conf-clang",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-linux-clang"

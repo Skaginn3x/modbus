@@ -233,6 +233,23 @@ int main() {
     expect(request.or_mask == 16);
   };
 
+  "deserialize request read_write_multiple_registers"_test = []() {
+    // Request captured from M580 PLC
+    std::array<std::uint8_t, 21> data = {0x04 ,0x8c ,0x00, 0x00, 0x00, 0x0d, 0xff, 0x17, 0x00, 0x00, 0x00, 0x27, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00 };
+
+    auto expected_request =
+        deserialize_request(std::span(data).subspan(modbus::tcp_mbap::size), modbus::function_e::read_write_multiple_registers);
+    expect(expected_request.has_value());
+    expect(holds_alternative<modbus::request::read_write_multiple_registers>(expected_request.value()));
+    auto request = std::get<modbus::request::read_write_multiple_registers>(expected_request.value());
+    expect(request.function == modbus::function_e::read_write_multiple_registers);
+    expect(request.values.size() == 1);
+    expect(request.values[0] == 0);
+    expect(request.read_address == 0);
+    expect(request.read_count == 39);
+    expect(request.write_address == 0);
+  };
+
   // ATH, mbpoll -r parameter is from 1 but the modbus addresses
   // are from 0. So the address 1 in mbpoll is 0 in modbus.
 
@@ -388,5 +405,10 @@ int main() {
     expect(response.and_mask == 15);
     expect(response.or_mask == 16);
   };
+
+  "deserialize response read_write_multiple_registers"_test = []() {
+    //TODO: Having trouble creating a known good byte array for this test.
+  };
+
   return 0;
 }
