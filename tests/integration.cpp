@@ -55,7 +55,7 @@ int main() {
               co_await client.connect("localhost", std::to_string(port), asio::as_tuple(asio::use_awaitable));
           expect(!connect_error);
           handler->registers[0] = 1337;
-          auto res = co_await client.read_write_multiple_registers(0, 0, 1, 1, {1338}, asio::use_awaitable);
+          auto res = co_await client.read_write_multiple_registers(0, 0, 1, 1, { 1338 }, asio::use_awaitable);
           expect(res.has_value());
           expect(res.value().values.size() == 1);
           expect(res.value().values[0] == 1337) << res.value().values[0];

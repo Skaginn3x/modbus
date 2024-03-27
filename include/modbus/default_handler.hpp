@@ -86,8 +86,8 @@ struct default_handler {
   }
 
   modbus::response::read_write_multiple_registers handle(uint8_t,
-                                                    const modbus::request::read_write_multiple_registers& req,
-                                                    modbus::errc_t&) {
+                                                         const modbus::request::read_write_multiple_registers& req,
+                                                         modbus::errc_t&) {
     modbus::response::read_write_multiple_registers resp{};
     auto iit = req.values.begin();
     auto oit = registers.begin() + req.write_address;
