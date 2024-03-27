@@ -236,6 +236,24 @@ int main() {
     expect(request.and_mask == ex_request.and_mask) << request.and_mask << " " << ex_request.and_mask;
     expect(request.or_mask == ex_request.or_mask) << request.or_mask << " " << ex_request.or_mask;
   };
+
+  "serialize request read_write_multiple_registers"_test = []() {
+    using req_t = modbus::request::read_write_multiple_registers;
+    req_t request{};
+    request.values = { 0 };
+    request.read_address = 0;
+    request.read_count = 39;
+    request.write_address = 0;
+    auto data = request.serialize();
+    req_t ex_request{};
+    auto error = ex_request.deserialize(data);
+    expect(!error);
+    expect(request.values == ex_request.values);
+    expect(request.read_address == ex_request.read_address);
+    expect(request.read_count == ex_request.read_count);
+    expect(request.write_address == ex_request.write_address);
+  };
+
   "serialize response read_coils"_test = []() {
     using res_t = modbus::response::read_coils;
     res_t response{};
@@ -366,6 +384,16 @@ int main() {
     expect(response.address == ex_response.address) << response.address << " " << ex_response.address;
     expect(response.and_mask == ex_response.and_mask) << response.and_mask << " " << ex_response.and_mask;
     expect(response.or_mask == ex_response.or_mask) << response.or_mask << " " << ex_response.or_mask;
+  };
+  "serialize request read_write_multiple_registers"_test = []() {
+    using req_t = modbus::response::read_write_multiple_registers;
+    req_t response{};
+    response.values = { 1337, 10, 15, 2 };
+    auto data = response.serialize();
+    req_t ex_response{};
+    auto error = ex_response.deserialize(data);
+    expect(!error);
+    expect(response.values == ex_response.values);
   };
   return 0;
 }

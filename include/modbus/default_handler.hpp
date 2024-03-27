@@ -85,6 +85,20 @@ struct default_handler {
     return resp;
   }
 
+  modbus::response::read_write_multiple_registers handle(uint8_t,
+                                                         const modbus::request::read_write_multiple_registers& req,
+                                                         modbus::errc_t&) {
+    modbus::response::read_write_multiple_registers resp{};
+    auto iit = req.values.begin();
+    auto oit = registers.begin() + req.write_address;
+    while (iit < req.values.end() && oit < registers.end()) {
+      *oit++ = *iit++;
+    }
+    resp.values.insert(resp.values.end(), registers.cbegin() + req.read_address,
+                       registers.cbegin() + req.read_address + req.read_count);
+    return resp;
+  }
+
   // TODO: Verify this method
   modbus::response::mask_write_register handle(uint8_t, const modbus::request::mask_write_register& req, modbus::errc_t&) {
     modbus::response::mask_write_register resp{};

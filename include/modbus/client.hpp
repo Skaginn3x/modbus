@@ -215,6 +215,23 @@ public:
                                           std::forward<decltype(token)>(token));
   }
 
+  /// Perform a read_write_multiple_registers on the connected server.
+  /**
+   * Compliant servers will set the value of the register to:
+   * ((old_value AND and_mask) OR (or_mask AND NOT and_MASK))
+   */
+  template <typename completion_token>
+  auto read_write_multiple_registers(std::uint8_t unit,
+                                     std::uint16_t read_address,
+                                     std::uint16_t read_count,
+                                     std::uint16_t write_address,
+                                     std::vector<std::uint16_t> values,
+                                     completion_token&& token) {
+    return send_message<completion_token>(
+        unit, request::read_write_multiple_registers{ read_address, read_count, write_address, values },
+        std::forward<decltype(token)>(token));
+  }
+
 protected:
   /// Send a Modbus request to the server.
   template <typename completion_token>

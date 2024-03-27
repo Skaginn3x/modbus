@@ -45,6 +45,7 @@ struct write_single_register;
 struct write_multiple_coils;
 struct write_multiple_registers;
 struct mask_write_register;
+struct read_write_multiple_registers;
 }  // namespace response
 
 namespace request {
@@ -437,6 +438,65 @@ struct mask_write_register {
   }
 };
 
+/// Message representing a read_write_multiple_registers request.
+struct read_write_multiple_registers {
+  /// Response type.
+  using response = response::read_write_multiple_registers;
+
+  /// The function code.
+  static constexpr function_e function = function_e::read_write_multiple_registers;
+
+  /// The address of the register to read from
+  std::uint16_t read_address;
+
+  /// The amount of words to read
+  std::uint16_t read_count;
+
+  /// The address of the register to read from
+  std::uint16_t write_address;
+
+  /// The values to write.
+  std::vector<std::uint16_t> values;
+
+  /// The length of the serialized ADU in bytes.
+  [[nodiscard]] auto length() const -> std::size_t { return 10 + values.size() * 2; }
+
+  [[nodiscard]] auto serialize() const -> std::vector<uint8_t> {
+    std::vector<uint8_t> ret_value;
+    ret_value.emplace_back(impl::serialize_function(function));
+
+    auto read_address_arr = impl::serialize_16_array(impl::serialize_be16(read_address));
+    ret_value.insert(ret_value.end(), read_address_arr.begin(), read_address_arr.end());
+
+    auto read_count_arr = impl::serialize_16_array(impl::serialize_be16(read_count));
+    ret_value.insert(ret_value.end(), read_count_arr.begin(), read_count_arr.end());
+
+    auto write_address_arr = impl::serialize_16_array(impl::serialize_be16(write_address));
+    ret_value.insert(ret_value.end(), write_address_arr.begin(), write_address_arr.end());
+
+    auto arr_values = impl::serialize_words_request(values);
+    ret_value.insert(ret_value.end(), arr_values.begin(), arr_values.end());
+
+    return ret_value;
+  }
+
+  /// Deserialize request.
+  [[nodiscard]] auto deserialize(std::ranges::range auto data) -> std::error_code {
+    if (auto error = impl::check_length(data.size(), length())) {
+      return error;
+    }
+    read_address = impl::deserialize_be16(std::span(data).subspan(1, 2));
+    read_count = impl::deserialize_be16(std::span(data).subspan(3, 2));
+    write_address = impl::deserialize_be16(std::span(data).subspan(5, 2));
+    auto expected = impl::deserialize_words_request(std::span(data).subspan(7));
+    if (!expected) {
+      return expected.error();
+    }
+    values = expected.value();
+    return {};
+  }
+};
+
 using requests = std::variant<read_coils,
                               read_discrete_inputs,
                               read_holding_registers,
@@ -445,6 +505,7 @@ using requests = std::variant<read_coils,
                               write_single_register,
                               write_multiple_coils,
                               write_multiple_registers,
-                              mask_write_register>;
+                              mask_write_register,
+                              read_write_multiple_registers>;
 }  // namespace request
 }  // namespace modbus

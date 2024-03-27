@@ -134,6 +134,8 @@ auto handle_connection(tcp::socket client, auto&& handler) -> awaitable<void> {
       std::array<asio::const_buffer, 2> buffs{ asio::buffer(header_bytes), asio::buffer(resp.value()) };
       co_await async_write(state->client_, buffs, use_awaitable);
     } else {
+      std::cerr << "error client: " << state->client_.remote_endpoint() << " error " << modbus_error(resp.error()).message()
+                << '\n';
       co_await async_write(state->client_, asio::buffer(build_error_buffer(header, 0, resp.error()), count), use_awaitable);
     }
   }
