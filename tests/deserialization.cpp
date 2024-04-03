@@ -235,10 +235,11 @@ int main() {
 
   "deserialize request read_write_multiple_registers"_test = []() {
     // Request captured from M580 PLC
-    std::array<std::uint8_t, 21> data = {0x04 ,0x8c ,0x00, 0x00, 0x00, 0x0d, 0xff, 0x17, 0x00, 0x00, 0x00, 0x27, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00 };
+    std::array<std::uint8_t, 21> data = { 0x04, 0x8c, 0x00, 0x00, 0x00, 0x0d, 0xff, 0x17, 0x00, 0x00,
+                                          0x00, 0x27, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00 };
 
-    auto expected_request =
-        deserialize_request(std::span(data).subspan(modbus::tcp_mbap::size), modbus::function_e::read_write_multiple_registers);
+    auto expected_request = deserialize_request(std::span(data).subspan(modbus::tcp_mbap::size),
+                                                modbus::function_e::read_write_multiple_registers);
     expect(expected_request.has_value());
     expect(holds_alternative<modbus::request::read_write_multiple_registers>(expected_request.value()));
     auto request = std::get<modbus::request::read_write_multiple_registers>(expected_request.value());
@@ -407,7 +408,22 @@ int main() {
   };
 
   "deserialize response read_write_multiple_registers"_test = []() {
-    //TODO: Having trouble creating a known good byte array for this test.
+    // Response captured from M580 PLC
+    auto data =
+        std::array<uint8_t, 29>{ 0x00, 0x0e, 0x00, 0x00, 0x00, 0x17, 0xfc, 0x17, 0x14, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03,
+                                 0x00, 0x04, 0x00, 0x05, 0x00, 0x06, 0x00, 0x07, 0x00, 0x08, 0x00, 0x09, 0x00, 0x0a };
+
+    auto expected_response = deserialize_response(std::span(data).subspan(modbus::tcp_mbap::size),
+                                                  modbus::function_e::read_write_multiple_registers);
+    expect(expected_response.has_value());
+    expect(holds_alternative<modbus::response::read_write_multiple_registers>(expected_response.value()));
+    auto response = std::get<modbus::response::read_write_multiple_registers>(expected_response.value());
+    expect(response.function == modbus::function_e::read_write_multiple_registers);
+    expect(response.values.size() == 10);
+    std::uint16_t i = 0;
+    for (auto& elem : response.values) {
+      expect(elem == ++i);
+    }
   };
 
   return 0;
