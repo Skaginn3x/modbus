@@ -388,7 +388,7 @@ int main() {
   "serialize request read_write_multiple_registers"_test = []() {
     using req_t = modbus::response::read_write_multiple_registers;
     req_t response{};
-    response.values = { 1337, 10, 15, 2};
+    response.values = { 1337, 10, 15, 2 };
     auto data = response.serialize();
     req_t ex_response{};
     auto error = ex_response.deserialize(data);

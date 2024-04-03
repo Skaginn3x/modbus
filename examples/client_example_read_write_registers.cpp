@@ -36,7 +36,8 @@ int main(int argc, const char** argv) {
         std::cout << "Connected!" << '\n';
 
         for (size_t i = 0; i < 25; i++) {
-          auto response = co_await client.read_write_multiple_registers(0, 1000, 10, 1010, {1,2,3,4,5,6}, asio::use_awaitable);
+          auto response =
+              co_await client.read_write_multiple_registers(0, 1000, 10, 1010, { 1, 2, 3, 4, 5, 6 }, asio::use_awaitable);
           if (!response) {
             std::cerr << "Error reading: " << response.error().message() << '\n';
             exit(-1);
